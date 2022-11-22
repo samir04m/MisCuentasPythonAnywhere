@@ -1,0 +1,82 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load misTags %}
+
+{% block title %}Todos Mis Prestamos{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <h5 class="text-center text-light mb-3 animate__animated animate__fadeInDown">Listado de prestamos</h5>
+        <div class="card animate__animated animate__fadeInUp">
+            <div class="card-body">
+                {% if prestamos %}
+                    <p>
+                        Actualmente usted tiene en sus cuentas un total de ${{saldoTotal|puntomil}} <br>
+                        En total usted debe ${{yoDebo|puntomil}} y le deben a usted ${{meDeben|puntomil}} <br>
+                        {{pagandoPrestamosMensaje}} ${{pagandoPrestamosMeQueda|puntomil}} <br>
+                        Es decir, pagados todos sus prestamos usted quedaria con ${{saldoRestante|puntomil}}
+                    </p>
+                    
+                    <table class="table table-responsive-sm" id="miTabla">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Persona</th>
+                                <th>Tipo</th>
+                                <th>Valor</th>
+                                <th>Por pagar</th>
+                                <th>Cancelado</th>
+                                <th>Ver</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in prestamos %}
+                                <tr>
+                                    <td>
+                                        <span class="d-none d-md-block">
+                                            {{p.fecha|date:'D, d/m/y h:iA'}}
+                                        </span>
+                                        <span  class="d-md-none">
+                                            {{p.fecha|date:'d/m/y h:iA'}}
+                                        </span>
+                                    </td>
+                                    <td><a href="{% url 'panel:vista_persona' p.persona.id %}">{{p.persona.nombre}}</a></td>
+                                    <td>{{p.get_tipo_display}}</td>
+                                    <td>$ {{p.cantidad|puntomil}}</td>
+                                    <td>$ {{p.saldo_pendiente|puntomil}}</td>
+                                    <td>
+                                        <i class="{{p.cancelada|cancelada_icono}}"></i> 
+                                        {% if p.cancelada %}
+                                            Si
+                                        {% else %}
+                                            No
+                                        {% endif %}
+                                    </td>
+                                    <td><a href="{% url 'panel:vista_prestamo' p.id %}" class="btn btn-sm btn-outline-primary"><i class="far fa-eye"></i></a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="fs-18 text-center my-5">
+                        Todavía no se han registrado prestamos
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+
+    <link rel="stylesheet" href="{% static 'css/datatables.css' %}">
+    <script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#miTabla').DataTable({
+                "aaSorting": []
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load misTags %}
+
+{% block title %}Todos mis Movimientos{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="mb-3 text-center text-light animate__animated animate__fadeInDown">
+                    <b class="fs-18">Todos Mis Movimientos</b>
+                </div>
+                <div class="card animate__animated animate__fadeInUp">
+                    <div class="card-body">
+                        {% if transacciones %}
+                            <table class="table table-responsive-sm"  id="miTabla">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Cuenta</th>
+                                        <th>Valor</th>
+                                        <th>Etiqueta</th>
+                                        <th>Informacón</th>
+                                        <th>Ver</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for t in transacciones %}
+                                        <tr class="{{t.tipo|textcolor}}">
+                                            <td>
+                                                <span class="d-none d-md-block">
+                                                    {{t.fecha|date:'D, d/m/y h:iA'}}
+                                                </span>
+                                                <span  class="d-md-none">
+                                                    {{t.fecha|date:'d/m/y h:iA'}}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'panel:movimientos_cuenta' t.cuenta.id %}" class="reset-color-a">{{t.cuenta.nombre}}</a>
+                                            </td>
+                                            <td> {{t.tipo|signo}}${{t.cantidad|puntomil}}</td>
+                                            <td>
+                                                {% if t.etiqueta.id %}
+                                                    <a href="{% url 'panel:movimientos_etiqueta' t.etiqueta.id %}" class="reset-color-a">{{t|sin_etiqueta}}</a>
+                                                {% else %}
+                                                    {{t|sin_etiqueta}}
+                                                {% endif %}
+                                            </td>
+                                            <td>{{t.info|truncatechars:'20'}}</td>
+                                            <td>
+                                                <a href="{% url 'panel:vista_transaccion' t.id %}"
+                                                    class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-external-link-alt"></i></a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                        {% else %}
+                            <div class="fs-18 text-center">
+                                No hay movimientos.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <link rel="stylesheet" href="{% static 'css/datatables.css' %}">
+    <script src="{% static 'js/datatables.js' %}" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#miTabla').DataTable({
+                order: []
+            });
+        });
+    </script>
+{% endblock %} %}

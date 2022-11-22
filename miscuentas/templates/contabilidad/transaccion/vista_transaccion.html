@@ -1,0 +1,73 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Vista de Transaccion{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-md-2 col-md-8">
+                <div class="card animate__animated animate__fadeInUp">
+                    <div class="card-body">
+                        <h5 class="text-center">Detalles de la Transacción</h5>
+                        <hr>
+                        <table class="table table-responsive-sm table-borderless">
+                            <tbody>
+                                <tr>
+                                    <th>Fecha:</th>
+                                    <td>{{transaccion.fecha|date:'l d F Y - h:i A'}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Tipo:</th>
+                                    <td>
+                                        {% if transaccion.tipo == 'egreso' %}
+                                            <a href="{% url 'reporte:egresos_diarios' %}">{{transaccion.get_tipo_display}}</a>
+                                        {% else %}
+                                            <a href="{% url 'reporte:ingresos_diarios' %}">{{transaccion.get_tipo_display}}</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Cuenta:</th>
+                                    <td>
+                                        <a href="{% url 'panel:movimientos_cuenta' transaccion.cuenta.id %}">
+                                            {{transaccion.cuenta.nombre}}
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Valor:</th>
+                                    <td>$ {{transaccion.cantidad|puntomil}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Saldo anterior:</th>
+                                    <td>$ {{transaccion.saldo_anterior|puntomil}}</td>
+                                </tr>
+                                {% if transaccion.etiqueta %}
+                                    <tr>
+                                        <th>Etiqueta</th>
+                                        <td>
+                                            <a href="{% url 'panel:movimientos_etiqueta' transaccion.etiqueta.id %}">
+                                                {{transaccion.etiqueta.nombre}}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                                <tr>
+                                    <th>Información:</th>
+                                    <td>{{transaccion.info|linebreaks}}</td>
+                                </tr>                                
+                            </tbody>
+                        </table>
+                        <div class="text-center">
+                            {% if request.user.is_superuser %}
+                                <a href="/admin/contabilidad/transaccion/{{transaccion.id}}/change/" class="btn btn-outline-success" target="_blank">Editar</a>
+                            {% endif %}
+                            <a href="{% url 'panel:transaccion_rollback' transaccion.id %}" class="btn btn-outline-danger">Deshacer</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'base/base.html' %}
+{% load misTags %}
+
+{% block title %}Panel de administracion{% endblock %}
+
+{% block contenido %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-6 col-lg-8">
+
+                <div class="mb-3 text-center text-light animate__animated animate__fadeInDown">
+                    <b class="fs-18">Mis cuentas</b>
+                    <a href="{% url 'panel:crear_cuenta' %}" class="btn btn-sm btn-outline-light">
+                        Crear Cuenta  <i class="fas fa-plus"></i></a>
+                </div>
+
+                {% if  cuentas%}
+                    <div class="row">
+                        {% for c in cuentas %}
+                            <div class="col-sm-12 col-lg-6 my-2">
+                                <div class="card clearfix bg-white animate__animated animate__zoomIn" >
+                                    <div class="card-body py-2">
+                                        <b><a href="{% url 'panel:movimientos_cuenta' c.id %}" class="fs-18">{{c.nombre}}</a></b> <br>
+                                        Saldo $ {{c.saldo|puntomil}}
+                                        <div class="float-right pt-1">
+                                            <a href="{% url 'panel:crear_ingreso' c.id %}" class="btn btn-sm btn-primary rounded-pill">Ingreso</a>
+                                            <a href="{% url 'panel:crear_egreso' c.id %}" class="btn btn-sm btn-danger rounded-pill">Egreso</a>
+                                            <a href="{% url 'panel:transferir' c.id %}" class="btn btn-sm btn-warning rounded-pill">Transferir</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <h5 class="text-light text-center my-5">No hay cuentas</h5>
+                {% endif %}
+
+
+                <div class="text-center text-light my-3 animate__animated animate__fadeInDown">
+                    <b class="fs-18">Personas/Tarjetas</b>
+                    <a href="{% url 'panel:crear_persona' %}" class="btn btn-sm btn-outline-light">
+                        Crear  <i class="fas fa-plus"></i></a>
+                </div>
+
+                    {% if personas %}
+                        <div class="row">
+                            {% for p in personas %}
+                                <div class="col-sm-12 col-lg-6 py-2">
+                                    <div class="card rounded-pill clearfix bg-white animate__animated animate__zoomIn">
+                                        <div class="card-body p-2 pl-3">
+                                            <a href="{% url 'panel:vista_persona' p.id %}" class="fs-20">
+                                                {% if p.isCreditCard %}
+                                                    <i class="far fa-credit-card"></i>
+                                                {% else %}
+                                                    <i class="fas fa-user-circle"></i>
+                                                {% endif %}
+                                                {{p.nombre}}
+                                            </a>
+                                            <div class="float-right">
+                                                <a href="{% url 'panel:crear_prestamo' p.id %}"
+                                                    class="btn btn-sm btn-primary rounded-pill">Prestar</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center my-5 animate__animated animate__fadeInUp">
+                            <h5 class="m-30 text-white">No hay Personas o Tarjetas</h5>
+                        </div>
+                    {% endif %}
+
+            </div>
+            <div class="col-sm-12 offset-md-1 col-md-5 offset-lg-1 col-lg-3 mt-3">
+                {% include 'base/panel_enlaces.html' %}
+                <br>
+                {% include 'base/panel_reportes.html' %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    {% if messages %}
+        <script type="text/javascript">
+            $(function () {
+                Swal.fire({
+                    icon: '{{messages|getMessage:"icon" }}',
+                    title: '{{messages|getMessage }}',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            });
+        </script>
+    {% endif %}
+{% endblock %}
+
